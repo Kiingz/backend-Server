@@ -5,6 +5,50 @@ var app = express();
 
 var Usuario = require('../models/usuario');
 
+
+// ==============================
+// Actualizar usuario
+// ==============================
+app.put('/:id', (req, res) => {
+    var id = req.params.id;
+    var body = req.body;
+
+    Usuario.findById(id, (err, usuario) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al buscar usuario',
+                errors: err
+            });
+        }
+        if (!usuario) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'El usuario con el id ' + id + ' no existe',
+                errors: { message: 'No existe un usuario con este ID' }
+            });
+        }
+        usuario.nombre = body.nombre;
+        usuario.email = body.email;
+        usuario.role = body.role;
+
+        usuario.save((err, usuarioGuardado) => {
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'Error al actualizar usuario',
+                    errors: err
+                });
+            }
+            usuarioGuardado.password = '***';
+            res.status(200).json({
+                ok: true,
+                usuario: usuarioGuardado
+            });
+        });
+    });
+});
+
 // ==============================
 // Obtener todos los usuarios
 // ==============================
