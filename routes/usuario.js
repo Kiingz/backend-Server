@@ -1,9 +1,53 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+
+var SEED = require('../config/config').SEED;
 
 var app = express();
 
+
 var Usuario = require('../models/usuario');
+
+
+// ==============================
+// Obtener todos los usuarios
+// ==============================
+app.get('/', (req, res, next) => {
+
+    Usuario.find({}, 'nombre email img role')
+        .exec(
+            (err, usuarios) => {
+                if (err) {
+                    return res.status(500).json({
+                        ok: false,
+                        mensaje: 'Error cargando usuarios',
+                        errors: err
+                    });
+                }
+                res.status(200).json({
+                    ok: true,
+                    usuarios: usuarios
+                });
+            });
+});
+// ==============================
+// Verificar token - Middleware
+// ==============================
+app.use('/', (req, res, next) => {
+    var token = req.query.token;
+    jwt.verify(token, SEED, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({
+                ok: false,
+                mensaje: 'Token incorrecto',
+                errors: err
+            });
+        }
+        next();
+    });
+});
+
 
 
 // ==============================
@@ -47,28 +91,6 @@ app.put('/:id', (req, res) => {
             });
         });
     });
-});
-
-// ==============================
-// Obtener todos los usuarios
-// ==============================
-app.get('/', (req, res, next) => {
-
-    Usuario.find({}, 'nombre email img role')
-        .exec(
-            (err, usuarios) => {
-                if (err) {
-                    return res.status(500).json({
-                        ok: false,
-                        mensaje: 'Error cargando usuarios',
-                        errors: err
-                    });
-                }
-                res.status(200).json({
-                    ok: true,
-                    usuarios: usuarios
-                });
-            });
 });
 
 // ==============================
