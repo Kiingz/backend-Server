@@ -11,6 +11,13 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+//============================================================
+// Server index configuracion
+// var serveIndex = require('serve-index');
+// app.use(express.static(__dirname + '/'))
+// app.use('/uploads', serveIndex(__dirname + '/uploads'));
+//============================================================
+
 // Importar Rutas
 var appRoutes = require('./routes/app');
 var medicoRoutes = require('./routes/medico');
