@@ -12,7 +12,10 @@ var Usuario = require('../models/usuario');
 // Obtener todos los usuarios
 // ==============================
 app.get('/', (req, res, next) => {
-    Usuario.find({}, 'nombre email img role google').exec((err, usuarios) => {
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
+
+    Usuario.find({}, 'nombre email img role google').skip(desde).limit(5).exec((err, usuarios) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
