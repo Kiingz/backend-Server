@@ -8,9 +8,9 @@ var app = express();
 
 // CORS
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, COntent-Type, Accept");
-    res.header("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE, OPTIONS");
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, COntent-Type, Accept');
+    res.header('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
     next();
 });
 
@@ -34,6 +34,7 @@ var usuarioRoutes = require('./routes/usuario');
 var loginRoutes = require('./routes/login');
 var uploadRoutes = require('./routes/upload');
 var imagenesRoutes = require('./routes/imagenes');
+var busquedaRoutes = require('./routes/busqueda');
 
 // Conexión a la base de datos
 mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (err, res) => {
@@ -48,6 +49,7 @@ app.use('/hospital', hospitalRoutes);
 app.use('/login', loginRoutes);
 app.use('/upload', uploadRoutes);
 app.use('/img', imagenesRoutes);
+app.use('/busqueda', busquedaRoutes);
 
 app.use('/', appRoutes);
 

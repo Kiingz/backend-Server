@@ -10,35 +10,35 @@ var Medico = require('../models/medico');
 // Obtener todos los Medicos
 // ==============================
 app.get('/', (req, res, next) => {
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
 
-    Medico.find({})
-        .exec(
-            (err, medicos) => {
-                if (err) {
-                    return res.status(500).json({
-                        ok: false,
-                        mensaje: 'Error cargando medicos',
-                        errors: err
-                    });
-                }
-                res.status(200).json({
-                    ok: true,
-                    medicos: medicos
-                });
+    Medico.find({}).skip(desde).limit(5).exec((err, medicos) => {
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error cargando medicos',
+                errors: err
             });
+        }
+        Medico.count({}, (err, conteo) => {
+            res.status(200).json({
+                ok: true,
+                medicos: medicos,
+                total: conteo
+            });
+        });
+    });
 });
 
 // ==============================
 // Actualizar Medicos
 // ==============================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
-
     var id = req.params.id;
     var body = req.body;
 
     Medico.findById(id, (err, medico) => {
-
-
         if (err) {
             return res.status(500).json({
                 ok: false,
@@ -60,7 +60,6 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         medico.hospital = body.hospital;
 
         medico.save((err, medicoGuardado) => {
-
             if (err) {
                 return res.status(400).json({
                     ok: false,
@@ -73,13 +72,9 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
                 ok: true,
                 medico: medicoGuardado
             });
-
         });
-
     });
-
 });
-
 
 // ==============================
 // Crear un nuevo Medico
@@ -131,7 +126,6 @@ app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
             ok: true,
             medico: medicoEliminado
         });
-
     });
 });
 

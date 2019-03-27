@@ -21,16 +21,18 @@ const client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_SECRET);
 app.post('/google', async(req, res) => {
     var token = req.body.token || '';
 
-    const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: GOOGLE_CLIENT_ID,
-    }).catch(e => {
-        return res.status(403).json({
-            ok: false,
-            mensaje: 'Token no válido',
-            err: e
+    const ticket = await client
+        .verifyIdToken({
+            idToken: token,
+            audience: GOOGLE_CLIENT_ID
+        })
+        .catch((e) => {
+            return res.status(403).json({
+                ok: false,
+                mensaje: 'Token no válido',
+                err: e
+            });
         });
-    })
 
     const googleUser = ticket.getPayload();
 
@@ -40,7 +42,7 @@ app.post('/google', async(req, res) => {
                 ok: false,
                 err
             });
-        };
+        }
         if (usuarioDB) {
             if (usuarioDB.google === false) {
                 return res.status(400).json({
@@ -63,7 +65,6 @@ app.post('/google', async(req, res) => {
         } else {
             // Si el usuario no existe en nuestra base de datos
 
-
             let usuario = new Usuario();
             usuario.nombre = googleUser.name;
             usuario.email = googleUser.email;
@@ -76,7 +77,7 @@ app.post('/google', async(req, res) => {
                         ok: false,
                         err
                     });
-                };
+                }
                 let token = jwt.sign({ usuario: usuarioDB }, SEED, { expiresIn: 14400 });
                 //var token = jwt.sign({ usuario: usuarioBD }, SEED, { expiresIn: 14400 }); // 4 horas
 
@@ -95,7 +96,6 @@ app.post('/google', async(req, res) => {
 // Login Normal
 //===================================================================
 app.post('/', (req, res) => {
-
     var body = req.body;
     Usuario.findOne({ email: body.email }, (err, usuarioDB) => {
         if (err) {
@@ -131,7 +131,5 @@ app.post('/', (req, res) => {
         });
     });
 });
-
-
 
 module.exports = app;
